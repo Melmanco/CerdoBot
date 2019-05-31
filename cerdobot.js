@@ -10,7 +10,9 @@ const cer2 = {
       return client.channels.get("583470609388798089");
   }
 };
-
+ 
+// Transforms seconds, minutes, hours or days
+// with the form 'quantityFormat' to milliseconds 
 function timeToMilliseconds(time){
 
   var format = time.charAt(time.length - 1);
@@ -45,17 +47,30 @@ client.on('message', (message) => {
   // Prevent bot from responding to reacting to its own message
   if (message.author == client.user){ return;}
   
-  if (message.channel.id == cer2.pruebaBots.id){
+  // Replies to messages at #prueba-bots
+  /*if (message.channel.id == cer2.pruebaBots.id){
     cer2.pruebaBots.send(message.author.toString() + " dijo " + message.content);
-  }
+  }*/
 
+  // Reminder for $pokemon
   if (message.content == '$pokemon'){
 
     setTimeout(() => {
 
-      message.channel.send(message.author.toString() + " ya puedes usar $pokemon otra vez!");
+      message.channel.send(message.author.toString() + ' ya puedes usar $pokemon otra vez!');
 
     }, timeToMilliseconds('2h'));
+
+  }
+
+  // Reminder for pls work
+  if (message.content == 'pls work'){
+
+    setTimeout(() => {
+
+      message.channel.send(message.author.toString() + ' ya puedes trabajar de nuevo!');
+
+    }, timeToMilliseconds('1h'));
 
   }
 
