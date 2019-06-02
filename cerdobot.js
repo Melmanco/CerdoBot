@@ -35,7 +35,7 @@ function timeToMilliseconds(time){
 client.on('ready', () => {
   // List servers the bot is connected to
   console.log("Connected as " + client.user.tag + " to servers:")
-  client.guilds.forEach((guild) => {
+  client.guilds.array().forEach((guild) => {
     console.log(" - " + guild)
   })
   // Says hi to server
@@ -43,51 +43,122 @@ client.on('ready', () => {
 
   // Creates an object with all users $pokemon and pls work state
   // to know if it has to remind them to use it
-  client.users.forEach((user) => {
-
-    userList[user] = {pokemon: false, work: false};
-
-  })
-
-})
-
-client.on('message', (message) => {
   
+  console.log('Generating userList');
+  client.guilds.array().forEach((guild) => {
+
+    guild.members.array().forEach((member) =>{
+
+        userList[member.user] = {pokemon: false, work: false};
+
+    })
+
+  });
+  console.log('Done');
+
+});
+
+client.on('message', async (message) => {
+  
+  var mStringNormal = message.content;
+  var mString = message.content.toLowerCase();
+  var mUser = message.author;
+  var mUserString = message.author.toString().substring(1);
+  var mChannel = message.channel;
+
+  var userId = message.author.id;
+
   // Prevent bot from responding to reacting to its own message
-  if (message.author == client.user){ return;}
+  if (mUser.bot){ return;}
   
-  // Replies to messages at #prueba-bots
-  /*if (message.channel.id == cer2.pruebaBots.id){
-    cer2.pruebaBots.send(message.author.toString() + " dijo " + message.content);
-  }*/
+  // Command to know if CerdoBot is working
+  if (mString == 'cerdobot?'){
+    
+   mChannel.send(':pig:');
+     
+  }
 
   // Reminder for $pokemon if haven't used $pokemon
-  if (message.content == '$pokemon' && !userList[message.author][pokemon]){
+  if (mString == '$pokemon' && !userList[mUser].pokemon){
 
-    userList[message.author][pokemon] = true;
-    message.channel.send(message.author.toString() + ' te voy a recordar capturar un pokemon en dos horas');
+    userList[mUser].pokemon = true;
+    mChannel.send(mUserString + ' te voy a recordar capturar un pokemon en dos horas.');
 
     setTimeout(() => {
 
-      message.channel.send(message.author.toString() + ' ya puedes usar $pokemon otra vez!');
+      mChannel.send(mUserString + ' ya puedes usar $pokemon otra vez!');
 
     }, timeToMilliseconds('2h'));
 
   }
 
   // Reminder for pls work if haven't used pls work
-  if (message.content == 'pls work' && !userList[message.author][work]){
+  if (mString == 'pls work' && !userList[mUser].work){
 
-    userList[message.author][pokemon] = true;
-    message.channel.send(message.author.toString() + ' te voy a recordar trabajar en una hora');
+    userList[mUser].work = true;
+    mChannel.send(mUserString + ' te voy a recordar trabajar en una hora.');
     setTimeout(() => {
 
-      message.channel.send(message.author.toString() + ' ya puedes trabajar de nuevo!');
+      mChannel.send(mUserString + ' ya puedes trabajar de nuevo!');
 
     }, timeToMilliseconds('1h'));
 
   }
 
+  var messageSplit = mString.split(/ +/g);
+  var prefix = messageSplit.shift();
+  var command = messageSplit.shift();
+  var args = messageSplit;
+
+
+  if (!(prefix == 'cerdobot!' || prefix == 'cb!')){return;}
+
+  // Main command for CerdoBot
+  else{
+    
+
+    if (command == 'reset' && args[0]){
+
+      // Resets all user data
+      if (args[0] == 'all'){
+
+        message.guild.members.array().forEach((member) =>{
+
+          userList[member.user] = {pokemon: false, work: false};
+
+        });
+
+        mChannel.send('Reinicié los recordatorios de todos.');
+
+      }
+
+      // Resets a specific user data
+      else if(args[0] in userList){
+
+        userList[args[0]]  = {pokemon: false, work: false};
+        mChannel.send('Reinicié los recordatorios de ' + mUserString + '.');
+
+      }
+
+    }
+  }
+
+  // Replies to messages at #prueba-bots
+  /*if (message.channel.id == cer2.pruebaBots.id){
+    cer2.pruebaBots.send(message.author.toString() + " dijo " + message.content);
+  }*/
+
+  
+
 });
   
 client.login(botToken);
+
+client.on('disconnect', async () => {
+
+  client.destroy();
+  client.login(botToken);
+
+});
+
+client.on('error',(err) => console.log(err));
