@@ -63,7 +63,7 @@ client.on('message', async (message) => {
   var mStringNormal = message.content;
   var mString = message.content.toLowerCase();
   var mUser = message.author;
-  var mUserString = message.author.toString().substring(1);
+  var mUserString = message.author.username;
   var mChannel = message.channel;
 
   var userId = message.author.id;
