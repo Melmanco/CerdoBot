@@ -153,9 +153,9 @@ client.on('message', async (message) => {
     // Custom reminder
     if (command == 'remind'){
 
-
-      var timeoutList = args.pop().split(':');
-      var userReminded + args.shift();
+      var timeoutString = args.pop()
+      var timeoutList = timeoutString.split(':');
+      var userReminded = args.shift();
       var reminder = args.join(' ');
       var timeout = 0;
       timeoutList.forEach((time) => {
@@ -166,8 +166,8 @@ client.on('message', async (message) => {
 
       if (userReminded in userList && timeout > 1){
 
-        mChannel.send('Recordatorio en ' + args[2] + ' guardado para ' + userReminded + ':\n' + reminder);
-        userList[args[0]].reminders.push(setTimeout(() => {
+        mChannel.send('Recordatorio en ' + timeoutString + ' guardado para ' + userReminded + ':\n' + reminder);
+        userList[userReminded].reminders.push(setTimeout(() => {
 
           mChannel.send(userReminded + '! recuerda:\n' + reminder);
 
