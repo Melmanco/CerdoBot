@@ -49,7 +49,7 @@ client.on('ready', () => {
 
     guild.members.array().forEach((member) =>{
 
-        userList[member.user] = {pokemon: false, work: false};
+        userList[member.user] = {pokemon: null, work: null,reminders:[]};
 
     })
 
@@ -79,10 +79,9 @@ client.on('message', async (message) => {
   // Reminder for $pokemon if haven't used $pokemon
   if (mString == '$pokemon' && !userList[mUser].pokemon){
 
-    userList[mUser].pokemon = true;
     mChannel.send(mUser.username + ' te voy a recordar capturar un pokemon en dos horas.');
 
-    setTimeout(() => {
+    userList[mUser].pokemon = setTimeout(() => {
 
       userList[mUser].pokemon = false;
       mChannel.send(mUser.toString() + ' ya puedes usar $pokemon otra vez!');
@@ -94,9 +93,8 @@ client.on('message', async (message) => {
   // Reminder for pls work if haven't used pls work
   if (mString == 'pls work' && !userList[mUser].work){
 
-    userList[mUser].work = true;
     mChannel.send(mUser.username + ' te voy a recordar trabajar en una hora.');
-    setTimeout(() => {
+    userList[mUser].work = setTimeout(() => {
 
       userList[mUser].work = false;
       mChannel.send(mUser.toString() + ' ya puedes trabajar de nuevo!');
@@ -117,29 +115,69 @@ client.on('message', async (message) => {
   else{
     
 
-    if (command == 'reset' && args[0]){
+    if (command == 'reset'){
 
-      // Resets all user data
-      if (args[0] == 'all'){
+      if (args.length == 1){
 
-        message.guild.members.array().forEach((member) =>{
+        // Resets all user data
+        if (args[0] == 'all'){
 
-          userList[member.user] = {pokemon: false, work: false};
+          message.guild.members.array().forEach((member) =>{
 
-        });
+            clearTimeout(userList[member.user].pokemon);
+            clearTimeout(userList[member.user].work);
+            userList[member.user].reminders.forEach((reminder) => clearTimeout(reminder));
+            userList[member.user].reminders = [];
 
-        mChannel.send('Reinicié los recordatorios de todos.');
+          });
 
+          mChannel.send('Reinicié los recordatorios de todos.');
+
+        }
+
+        // Resets a specific user data
+        else if(args[0] in userList){
+
+          clearTimeout(userList[args[0]].pokemon);
+          clearTimeout(userList[args[0]].work);
+          userList[args[0]].reminders.forEach((reminder) => clearTimeout(reminder));
+          userList[args[0]].reminders = [];
+          mChannel.send('Reinicié los recordatorios de ' + mUser.toString() + '.');
+
+        }
+        else{mChannel.send('Para usar reset debes escribir:\ncerdobot! reset (@usuario, o all si quieres reiniciar todo).');}
+      }
+      else{mChannel.send('Para usar reset debes escribir:\ncerdobot! reset (@usuario, o all si quieres reiniciar todo).');}
+    }
+
+    // Custom reminder
+    if (command == 'remind'){
+
+
+      var timeoutList = args.pop().split(':');
+      var userReminded + args.shift();
+      var reminder = args.join(' ');
+      var timeout = 0;
+      timeoutList.forEach((time) => {
+
+        timeout += timeToMilliseconds(time);
+
+      });
+
+      if (userReminded in userList && timeout > 1){
+
+        mChannel.send('Recordatorio en ' + args[2] + ' guardado para ' + userReminded + ':\n' + reminder);
+        userList[args[0]].reminders.push(setTimeout(() => {
+
+          mChannel.send(userReminded + '! recuerda:\n' + reminder);
+
+        }, timeout));
       }
 
-      // Resets a specific user data
-      else if(args[0] in userList){
-
-        userList[args[0]]  = {pokemon: false, work: false};
-        mChannel.send('Reinicié los recordatorios de ' + mUser.toString() + '.');
-
+      else{
+        mChannel.send('Para usar remind debes escribir:\ncerdobot! remind (@usuario) (recordatorio) (tiempo)');
+        mChannel.send('Ejemplo, si quieres recordarte ir al baño en una hora y media debes escribir:\ncerdobot! remind ' + mUser.toString() + ' ir al baño 1h:30m');
       }
-
     }
   }
 
