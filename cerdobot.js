@@ -63,9 +63,7 @@ client.on('message', async (message) => {
   var mStringNormal = message.content;
   var mString = message.content.toLowerCase();
   var mUser = message.author;
-  var mUserString = message.author.toString().substring(1);
   var mChannel = message.channel;
-
   var userId = message.author.id;
 
   // Prevent bot from responding to reacting to its own message
@@ -82,11 +80,12 @@ client.on('message', async (message) => {
   if (mString == '$pokemon' && !userList[mUser].pokemon){
 
     userList[mUser].pokemon = true;
-    mChannel.send(mUserString + ' te voy a recordar capturar un pokemon en dos horas.');
+    mChannel.send(mUser.username + ' te voy a recordar capturar un pokemon en dos horas.');
 
     setTimeout(() => {
 
-      mChannel.send(mUserString + ' ya puedes usar $pokemon otra vez!');
+      userList[mUser].pokemon = false;
+      mChannel.send(mUser.toString() + ' ya puedes usar $pokemon otra vez!');
 
     }, timeToMilliseconds('2h'));
 
@@ -96,10 +95,11 @@ client.on('message', async (message) => {
   if (mString == 'pls work' && !userList[mUser].work){
 
     userList[mUser].work = true;
-    mChannel.send(mUserString + ' te voy a recordar trabajar en una hora.');
+    mChannel.send(mUser.username + ' te voy a recordar trabajar en una hora.');
     setTimeout(() => {
 
-      mChannel.send(mUserString + ' ya puedes trabajar de nuevo!');
+      userList[mUser].work = false;
+      mChannel.send(mUser.toString() + ' ya puedes trabajar de nuevo!');
 
     }, timeToMilliseconds('1h'));
 
@@ -136,7 +136,7 @@ client.on('message', async (message) => {
       else if(args[0] in userList){
 
         userList[args[0]]  = {pokemon: false, work: false};
-        mChannel.send('Reinicié los recordatorios de ' + mUserString + '.');
+        mChannel.send('Reinicié los recordatorios de ' + mUser.toString() + '.');
 
       }
 
