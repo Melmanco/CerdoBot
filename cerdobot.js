@@ -144,7 +144,7 @@ client.on('message', async (message) => {
           clearTimeout(userList[args[0]].work);
           userList[args[0]].reminders.forEach((reminder) => clearTimeout(reminder));
           userList[args[0]].reminders = [];
-          mChannel.send('Reinicié los recordatorios de ' + mUser.toString() + '.');
+          mChannel.send('Reinicié los recordatorios de ' + args[0] + '.');
 
         }
         else{mChannel.send('Para usar reset debes escribir:\ncerdobot! reset (@usuario, o all si quieres reiniciar todo).');}
