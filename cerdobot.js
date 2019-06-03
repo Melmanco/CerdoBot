@@ -41,6 +41,8 @@ client.on('ready', () => {
   // Says hi to server
   //cer2.general.send("k onda k pex");
 
+  client.user.setActivity('Cerdeando con ' + client.users.size + ' cerdos.');
+
   // Creates an object with all users $pokemon and pls work state
   // to know if it has to remind them to use it
   
@@ -151,7 +153,7 @@ client.on('message', async (message) => {
     }
 
     // Custom reminder
-    if (command == 'remind'){
+    else if (command == 'remind'){
 
       var timeoutString = args.pop()
       var timeoutList = timeoutString.split(':');
@@ -178,6 +180,21 @@ client.on('message', async (message) => {
         mChannel.send('Para usar remind debes escribir:\ncerdobot! remind (@usuario) (recordatorio) (tiempo)');
         mChannel.send('Ejemplo, si quieres recordarte ir al baño en una hora y media debes escribir:\ncerdobot! remind ' + mUser.toString() + ' ir al baño 1h:30m');
       }
+    }
+
+    else if (command == 'help') {
+
+      mChannel.send('Para saber si estoy funcionando usa:\n' +
+                    'cerdobot?\n' +
+                    '----------------------------------------------------------------------\n' +
+                    'Para usar reset debes escribir:\ncerdobot! reset (@usuario, o all si quieres reiniciar todo).\n' +
+                    '----------------------------------------------------------------------\n' +
+                    'Para usar remind debes escribir:\ncerdobot! remind (@usuario) (recordatorio) (tiempo)\n' +
+                    'Ejemplo, si quieres recordarte ir al baño en una hora y media debes escribir:\ncerdobot! remind ' + mUser.toString() + ' ir al baño 1h:30m\n' +
+                    '----------------------------------------------------------------------\n' +
+                    'Y siempre que uses $pokemon o pls work te voy a recordar usarlos de nuevo!\n'
+      );
+
     }
   }
 
