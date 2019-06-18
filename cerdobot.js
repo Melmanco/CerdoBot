@@ -69,7 +69,7 @@ client.on('message', async (message) => {
   var userId = message.author.id;
 
   // Prevent bot from responding to reacting to its own message
-  if (mUser.bot){ return;}
+  if (userId == '583900442136674306'){ return;}
   
   // Command to know if CerdoBot is working
   if (mString == 'cerdobot?'){
@@ -79,30 +79,51 @@ client.on('message', async (message) => {
   }
 
   // Reminder for $pokemon if haven't used $pokemon
-  if (mString == '$pokemon' && !userList[mUser].pokemon){
+  else if ((mString.includes('congratulations, you won an uncommon nothing') ||
+            mString.includes('that\'s better: you got an uncommon') ||
+            mString.includes('oh, it\'s rare: you just won') ||
+            mString.includes('very impressive!!! you got a') ||
+            mString.includes('congrats, you just won a... a...') ||
+            mString.includes(', you won a ')
+          ) 
+            && userId == '580021037157187584'){
 
-    mChannel.send(mUser.username + ' te voy a recordar capturar un pokemon en dos horas.');
+    mUser = message.mentions.users.first();
 
-    userList[mUser].pokemon = setTimeout(() => {
+    if (!userList[mUser].pokemon){
 
-      userList[mUser].pokemon = false;
-      mChannel.send(mUser.toString() + ' ya puedes usar $pokemon otra vez!');
+      mChannel.send(mUser.username + ' te voy a recordar capturar un pokemon en dos horas.');
 
-    }, timeToMilliseconds('2h'));
+      userList[mUser].pokemon = setTimeout(() => {
 
+        userList[mUser].pokemon = false;
+        mChannel.send(mUser.toString() + ' ya puedes usar $pokemon otra vez!');
+
+      }, timeToMilliseconds('2h'));
+    }
   }
 
   // Reminder for pls work if haven't used pls work
-  if (mString == 'pls work' && !userList[mUser].work){
+  else if ((mString.includes(', got the work done well. you were given') ||
+            mString.includes('you never fail to amaze me') ||
+            mString.includes(', i expected better from you. i\'m only going to give you')
+          )
+           && userId == '270904126974590976'){
 
-    mChannel.send(mUser.username + ' te voy a recordar trabajar en una hora.');
-    userList[mUser].work = setTimeout(() => {
+    if (mString.includes(', got the work done well. you were given')) mUser = message.guild.members.get('name', mString.substring(17,mString.indexOf(',')));
+    else if (mString.includes('you never fail to amaze me')) mUser = message.guild.members.get('name', mString.substring(28,mString.indexOf('.')));
+    else mUser = message.guild.members.get('name', mString.substring(18,mString.indexOf(',')));
 
-      userList[mUser].work = false;
-      mChannel.send(mUser.toString() + ' ya puedes trabajar de nuevo!');
+    if (!userList[mUser].work){
 
-    }, timeToMilliseconds('1h'));
+      mChannel.send(mUser.username + ' te voy a recordar trabajar en una hora.');
+      userList[mUser].work = setTimeout(() => {
 
+        userList[mUser].work = false;
+        mChannel.send(mUser.toString() + ' ya puedes trabajar de nuevo!');
+
+      }, timeToMilliseconds('1h'));
+    }
   }
 
   var messageSplit = mString.split(/ +/g);
